@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+set -euo pipefail # Enable strict mode for safer execution（严格模式提升脚本可靠性）
+
+PACKAGE_VERSION="0.1.0"
+
+SCRIPT_NAME="$(basename "$0")" # Capture invoked name（记录调用名）
+DEFAULT_VERSION=""
+if [[ "$SCRIPT_NAME" == nvm-npx-* ]]; then
+  DEFAULT_VERSION="${SCRIPT_NAME#nvm-npx-}" # Extract suffix version（提取名称后缀中的版本号）
+fi
+
+usage() {
+  cat <<'EOF'
+Usage: nvm-npx [options] <node version> [npx arguments...]
+
+Options:
+  -h, --help          Show this help message
+  -V, --version       Print the nvm-npx version
+      --nvm-dir PATH  Use a custom nvm installation directory
+  --                  Stop parsing options; forward the rest to npx
+
+Examples:
+  nvm-npx 22 -y chrome-devtools-mcp@latest
+  nvm-npx --nvm-dir /opt/nvm 18 -y create-react-app my-app
+EOF
+}
+
+err() {
+  echo "nvm-npx: $*" >&2
+  exit 1
+}
+
+NVM_DIR_OVERRIDE=""
+
+# Parse flags before capturing the version（解析选项后再读取版本号）
+while (($# > 0)); do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -V|--version)
+      echo "nvm-npx ${PACKAGE_VERSION}"
+      exit 0
+      ;;
+    --nvm-dir)
+      if (($# < 2)); then
+        err "--nvm-dir requires a path"
+      fi
+      NVM_DIR_OVERRIDE="$2"
+      shift 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      # Unrecognized option; let the remaining logic handle it (likely an npx flag)
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+# Determine target Node.js version（确定目标 Node.js 版本）
+TARGET_VERSION=""
+if (($# > 0)); then
+  if [[ "$1" == -* && -n "$DEFAULT_VERSION" ]]; then
+    TARGET_VERSION="$DEFAULT_VERSION"
+  else
+    TARGET_VERSION="$1"
+    shift || true
+  fi
+elif [ -n "$DEFAULT_VERSION" ]; then
+  TARGET_VERSION="$DEFAULT_VERSION"
+else
+  usage >&2
+  err "Missing Node.js version argument"
+fi
+
+# Resolve NVM_DIR with override support（按优先级确定 NVM_DIR）
+if [ -n "$NVM_DIR_OVERRIDE" ]; then
+  export NVM_DIR="$NVM_DIR_OVERRIDE"
+else
+  export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+fi
+
+if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+  err "nvm.sh not found at $NVM_DIR/nvm.sh"
+fi
+
+# shellcheck source=/dev/null
+. "$NVM_DIR/nvm.sh" # Load nvm environment（加载 nvm 环境）
+
+exec nvm exec "$TARGET_VERSION" npx "$@" # Delegate to nvm exec（委托 nvm exec 执行）

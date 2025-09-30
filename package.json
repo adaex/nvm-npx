@@ -1,0 +1,26 @@
+{
+  "name": "nvm-npx",
+  "version": "0.1.0",
+  "description": "A tiny shell wrapper that runs npx under a specific Node.js version managed by nvm.",
+  "bin": {
+    "nvm-npx": "./bin/nvm-npx"
+  },
+  "files": [
+    "bin/"
+  ],
+  "keywords": [
+    "nvm",
+    "npx",
+    "node",
+    "cli"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adaex/nvm-exec.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adaex/nvm-exec/issues"
+  },
+  "homepage": "https://github.com/adaex/nvm-exec#readme"
+}
