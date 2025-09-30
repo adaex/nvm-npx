@@ -94,4 +94,5 @@ fi
 # shellcheck source=/dev/null
 . "$NVM_DIR/nvm.sh" # Load nvm environment（加载 nvm 环境）
 
-exec nvm exec "$TARGET_VERSION" npx "$@" # Delegate to nvm exec（委托 nvm exec 执行）
+nvm exec "$TARGET_VERSION" npx "$@" # Delegate to nvm exec（委托 nvm exec 执行）
+exit $? # Propagate exit code（透传退出码）
