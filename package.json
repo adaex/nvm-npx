@@ -1,6 +1,6 @@
 {
   "name": "nvm-npx",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A tiny shell wrapper that runs npx under a specific Node.js version managed by nvm.",
   "bin": {
     "nvm-npx": "./bin/nvm-npx"

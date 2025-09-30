@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail # Enable strict mode for safer execution（严格模式提升脚本可靠性）
 
-PACKAGE_VERSION="0.1.0"
+PACKAGE_VERSION="0.2.0"
 
 SCRIPT_NAME="$(basename "$0")" # Capture invoked name（记录调用名）
 DEFAULT_VERSION=""
